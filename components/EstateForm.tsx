@@ -141,14 +141,20 @@ export function EstateForm({
                   type="button"
                   className={`flex items-center gap-2 px-3 py-2 text-xs font-semibold rounded-xl whitespace-nowrap transition-all ${
                     isActive
-                      ? 'bg-white text-blue-700 shadow-xs border border-slate-200/80 font-bold'
-                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/60'
+                      ? 'bg-blue-50 text-blue-700 shadow-xs border border-blue-300 font-bold'
+                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/80 border border-transparent'
                   }`}
                 >
                   <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-blue-600' : 'text-slate-400'}`} />
                   <span>{tab.label}</span>
                   {tab.id === 'gifts' && (state.gifts || []).length > 0 && (
-                    <span className="ml-1 px-1.5 py-0.2 rounded-full text-[10px] bg-blue-100 text-blue-700 font-bold">
+                    <span
+                      className={`ml-1 px-1.5 py-0.2 rounded-full text-[10px] font-bold ${
+                        isActive
+                          ? 'bg-blue-200 text-blue-800'
+                          : 'bg-slate-200 text-slate-700'
+                      }`}
+                    >
                       {state.gifts.length}
                     </span>
                   )}
@@ -436,10 +442,10 @@ export function EstateForm({
               />
               <CurrencyInput
                 id="personalChattels"
-                label="Personal Chattels & Vehicles"
+                label="Personal Possessions & Vehicles (Chattels)"
                 value={state.personalChattels || 0}
                 onChange={(v) => updateField('personalChattels', v)}
-                helperText="Cars, jewelry, antiques, artwork, collections, furniture."
+                helperText="Cars, jewellery, antiques, artwork, collections, furniture."
               />
               <CurrencyInput
                 id="lifeInsuranceNotInTrust"
@@ -464,14 +470,23 @@ export function EstateForm({
                 </div>
                 <button
                   type="button"
+                  role="switch"
+                  aria-checked={state.includePensionsInEstate}
                   onClick={() => updateField('includePensionsInEstate', !state.includePensionsInEstate)}
-                  className={`px-3 py-1.5 text-xs font-semibold rounded-lg border transition-all shrink-0 ${
+                  className={`inline-flex items-center gap-2 px-3 py-1.5 text-xs font-semibold rounded-xl border transition-all shrink-0 shadow-2xs ${
                     state.includePensionsInEstate
-                      ? 'bg-amber-600 text-white border-amber-600 shadow-xs'
-                      : 'bg-white text-slate-700 border-slate-300'
+                      ? 'bg-amber-600 text-white border-amber-700 shadow-xs ring-2 ring-amber-500/20'
+                      : 'bg-white hover:bg-slate-50 text-slate-700 border-slate-300'
                   }`}
                 >
-                  {state.includePensionsInEstate ? 'April 2027 Rule: ON' : 'Current Rule: OFF'}
+                  <span
+                    className={`w-2 h-2 rounded-full ${
+                      state.includePensionsInEstate ? 'bg-white animate-pulse' : 'bg-slate-400'
+                    }`}
+                  />
+                  <span>
+                    {state.includePensionsInEstate ? 'April 2027 Rules: ON' : 'April 2027 Rules: OFF'}
+                  </span>
                 </button>
               </div>
 

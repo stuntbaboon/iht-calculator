@@ -4,8 +4,9 @@ import React from 'react';
 import { CalculationBreakdown } from '@/types/iht';
 import {
   AlertTriangle,
-  Lightbulb,
+  AlertCircle,
   Sparkles,
+  Info,
 } from 'lucide-react';
 
 interface ResultsSummaryProps {
@@ -314,41 +315,64 @@ export function ResultsSummary({
           </div>
         )}
 
-      {/* High-Value Taper Alert */}
-      {breakdown.rnrbTaperReduction > 0 && (
-        <div className="p-4 bg-amber-50/80 border border-amber-200 rounded-2xl space-y-2 text-xs text-amber-950">
-          <div className="flex items-center gap-2 font-bold text-amber-950">
-            <AlertTriangle className="w-4 h-4 text-amber-600" />
-            £2,000,000 Taper Threshold Active
-          </div>
-          <p className="text-amber-900 leading-relaxed">
-            Your net estate for taper testing is £
-            {breakdown.taperTestingEstateValue.toLocaleString('en-GB')}. Because it exceeds £2m, you have lost £
-            {breakdown.rnrbTaperReduction.toLocaleString('en-GB')} of your Residence Nil-Rate Band.
-          </p>
-        </div>
-      )}
+      {/* Personalized Estate Planning Alerts */}
+      {(() => {
+        // Filter out charity tip if dedicated optimizer widget is already visible
+        const hasCharityWidget =
+          breakdown.charityOptimization &&
+          !breakdown.charityOptimization.qualifiesFor36Percent &&
+          breakdown.charityOptimization.additionalDonationNeeded > 0;
 
-      {/* Tailored Planning Tips */}
-      {breakdown.planningTips.length > 0 && (
-        <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 space-y-3">
-          <div className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-slate-700">
-            <Lightbulb className="w-3.5 h-3.5 text-amber-500" />
-            Personalized Estate Planning Tips
+        const visibleAlerts = breakdown.planningTips.filter(
+          (tip) => !(hasCharityWidget && tip.id === 'charity-optimization')
+        );
+
+        if (visibleAlerts.length === 0) return null;
+
+        return (
+          <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 space-y-3">
+            <div className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-slate-700">
+              <AlertCircle className="w-3.5 h-3.5 text-blue-600" />
+              Personalized Estate Planning Alerts
+            </div>
+            <div className="space-y-2.5">
+              {visibleAlerts.map((alert) => {
+                const isWarning = alert.type === 'warning';
+                const isOpportunity = alert.type === 'tip';
+
+                return (
+                  <div
+                    key={alert.id}
+                    className={`p-3 bg-white border rounded-xl space-y-1 shadow-2xs transition-all ${
+                      isWarning
+                        ? 'border-amber-300/80 bg-amber-50/40'
+                        : isOpportunity
+                        ? 'border-emerald-300/80 bg-emerald-50/30'
+                        : 'border-slate-200/80'
+                    }`}
+                  >
+                    <div className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
+                      {isWarning && (
+                        <AlertTriangle className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+                      )}
+                      {isOpportunity && (
+                        <Sparkles className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                      )}
+                      {!isWarning && !isOpportunity && (
+                        <Info className="w-3.5 h-3.5 text-blue-600 shrink-0" />
+                      )}
+                      <span>{alert.title}</span>
+                    </div>
+                    <div className="text-[11px] text-slate-600 leading-relaxed">
+                      {alert.description}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           </div>
-          <div className="space-y-2.5">
-            {breakdown.planningTips.map((tip) => (
-              <div
-                key={tip.id}
-                className="p-3 bg-white border border-slate-200/80 rounded-xl space-y-1 shadow-2xs"
-              >
-                <div className="text-xs font-bold text-slate-900">{tip.title}</div>
-                <div className="text-[11px] text-slate-600 leading-relaxed">{tip.description}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
+        );
+      })()}
     </div>
   );
 }

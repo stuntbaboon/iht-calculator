@@ -109,7 +109,7 @@ export function PrintReport({ state, breakdown }: PrintReportProps) {
               <td className="py-1 text-right font-medium">£{(state.quotedInvestments || 0).toLocaleString('en-GB')}</td>
             </tr>
             <tr>
-              <td className="py-1 text-slate-600">Personal Chattels, Vehicles & Valuables:</td>
+              <td className="py-1 text-slate-600">Personal Possessions & Vehicles (Chattels):</td>
               <td className="py-1 text-right font-medium">£{(state.personalChattels || 0).toLocaleString('en-GB')}</td>
             </tr>
             {state.bpr100Assets > 0 && (
