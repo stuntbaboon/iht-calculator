@@ -58,14 +58,16 @@ export const SAMPLE_ESTATES: { name: string; description: string; state: EstateS
         {
           id: 'gift-1',
           date: '2021-06-15',
-          recipient: 'Son',
+          recipient: 'David Smith',
+          relationship: 'child',
           amount: 250_000,
           category: 'potentially_exempt_transfer',
         },
         {
           id: 'gift-2',
           date: '2023-09-01',
-          recipient: 'Daughter (Wedding)',
+          recipient: 'Emma Smith',
+          relationship: 'child',
           amount: 5_000,
           category: 'wedding_child',
         },

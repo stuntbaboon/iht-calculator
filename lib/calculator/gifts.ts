@@ -95,6 +95,7 @@ export function processLifetimeGifts(
       taperResults.push({
         giftId: gift.id,
         recipient: gift.recipient,
+        relationship: gift.relationship,
         date: gift.date,
         amount: gift.amount,
         exemptAmount: gift.amount,
@@ -212,6 +213,7 @@ export function processLifetimeGifts(
     taperResults.push({
       giftId: gift.id,
       recipient: gift.recipient,
+      relationship: gift.relationship,
       date: gift.date,
       amount: gift.amount,
       exemptAmount,

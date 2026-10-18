@@ -24,6 +24,7 @@ interface EstateFormProps {
   updateField: <K extends keyof EstateState>(field: K, value: EstateState[K]) => void;
   onAddGift: (gift: Omit<LifetimeGift, 'id'>) => void;
   onRemoveGift: (id: string) => void;
+  onUpdateGift?: (id: string, updated: Partial<LifetimeGift>) => void;
 }
 
 const TABS = [
@@ -42,6 +43,7 @@ export function EstateForm({
   updateField,
   onAddGift,
   onRemoveGift,
+  onUpdateGift,
 }: EstateFormProps) {
   const [activeTab, setActiveTab] = useState('family');
   const tabsContainerRef = useRef<HTMLDivElement>(null);
@@ -104,9 +106,9 @@ export function EstateForm({
   };
 
   return (
-    <div className="bg-white rounded-2xl shadow-xs border border-slate-200 overflow-hidden">
+    <div className="bg-white rounded-2xl shadow-xs border border-slate-200">
       {/* Navigation Tabs with Scroll Affordance */}
-      <div className="relative border-b border-slate-200 bg-slate-50/70">
+      <div className="relative border-b border-slate-200 bg-slate-50/70 rounded-t-2xl overflow-hidden">
         {/* Left Scroll Gradient & Button */}
         {canScrollLeft && (
           <div className="absolute left-0 top-0 bottom-0 z-10 flex items-center pl-1.5 pointer-events-auto">
@@ -626,6 +628,7 @@ export function EstateForm({
               taperResults={breakdown.giftTaperResults || []}
               onAddGift={onAddGift}
               onRemoveGift={onRemoveGift}
+              onUpdateGift={onUpdateGift}
             />
           </div>
         )}
@@ -725,7 +728,7 @@ export function EstateForm({
       </div>
 
       {/* Footer Navigation */}
-      <div className="border-t border-slate-200 bg-slate-50/70 p-4 flex items-center justify-between">
+      <div className="border-t border-slate-200 bg-slate-50/70 p-4 flex items-center justify-between rounded-b-2xl">
         <button
           type="button"
           onClick={handlePrev}

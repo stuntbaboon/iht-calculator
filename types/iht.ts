@@ -10,10 +10,22 @@ export type GiftCategory =
   | 'potentially_exempt_transfer'
   | 'chargeable_lifetime_transfer';
 
+export type GiftRelationship =
+  | 'child'
+  | 'grandchild'
+  | 'spouse'
+  | 'sibling'
+  | 'niece_nephew'
+  | 'parent'
+  | 'friend'
+  | 'charity'
+  | 'other';
+
 export interface LifetimeGift {
   id: string;
   date: string; // ISO date string: YYYY-MM-DD
-  recipient: string;
+  recipient: string; // Recipient Name
+  relationship?: GiftRelationship | string;
   amount: number;
   category: GiftCategory;
   taxYear?: string; // e.g. "2023/24"
@@ -74,6 +86,7 @@ export interface EstateState {
 export interface GiftTaperResult {
   giftId: string;
   recipient: string;
+  relationship?: string;
   date: string;
   amount: number;
   exemptAmount: number;

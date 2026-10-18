@@ -17,6 +17,7 @@ export default function HomePage() {
     updateField,
     addGift,
     removeGift,
+    updateGift,
     resetState,
     loadSample,
   } = useCalculatorState();
@@ -60,6 +61,7 @@ export default function HomePage() {
               updateField={updateField}
               onAddGift={addGift}
               onRemoveGift={removeGift}
+              onUpdateGift={updateGift}
             />
           </div>
 
