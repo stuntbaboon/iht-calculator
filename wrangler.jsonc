@@ -1,0 +1,14 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "iht-calculator",
+  "compatibility_date": "2024-11-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "pages_build_output_dir": ".next",
+  "kv_namespaces": [
+    {
+      "binding": "CALCULATIONS_KV",
+      "id": "<YOUR_KV_NAMESPACE_ID_PRODUCTION>",
+      "preview_id": "<YOUR_KV_NAMESPACE_ID_PREVIEW>"
+    }
+  ]
+}
