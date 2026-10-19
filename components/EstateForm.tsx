@@ -388,7 +388,7 @@ export function EstateForm({
                   label="Remaining Mortgage"
                   value={state.mainResidenceMortgage || 0}
                   onChange={(v) => updateField('mainResidenceMortgage', v)}
-                  helperText="Mortgages secured on the home are deducted."
+                  helperText="Balance owed (capital & interest accrued)"
                 />
               </div>
 
@@ -465,7 +465,7 @@ export function EstateForm({
                   label="Remaining Mortgage"
                   value={state.otherPropertiesMortgage || 0}
                   onChange={(v) => updateField('otherPropertiesMortgage', v)}
-                  helperText="Mortgages secured on the home are deducted."
+                  helperText="Balance owed (capital & interest accrued)"
                 />
               </div>
             </div>
