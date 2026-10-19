@@ -7,6 +7,7 @@ import {
   AlertCircle,
   Sparkles,
   Info,
+  ShieldCheck,
 } from 'lucide-react';
 
 interface ResultsSummaryProps {
@@ -18,10 +19,12 @@ export function ResultsSummary({
   breakdown,
   onOpenShareModal,
 }: ResultsSummaryProps) {
-  const netToBeneficiaries = Math.max(
-    0,
-    breakdown.netEstateBeforeReliefs - breakdown.totalTaxLiability - breakdown.charityExemptionAmount
-  );
+  const totalPassedToHeirs =
+    breakdown.totalInheritedByBeneficiaries ??
+    Math.max(
+      0,
+      breakdown.netEstateBeforeReliefs - breakdown.totalTaxLiability - breakdown.charityExemptionAmount + (breakdown.excludedAssetsTotal || 0)
+    );
 
   const grossVal = Math.max(1, breakdown.grossEstate);
   const allowancesPercent = Math.min(
@@ -95,7 +98,7 @@ export function ResultsSummary({
             </span>
             <span className="flex items-center gap-1.5">
               <span className="w-2 h-2 rounded-full bg-blue-500" />
-              Net to Heirs (£{netToBeneficiaries.toLocaleString('en-GB')})
+              Net to Heirs (£{totalPassedToHeirs.toLocaleString('en-GB')})
             </span>
           </div>
         </div>
@@ -282,6 +285,55 @@ export function ResultsSummary({
               </span>
             </div>
           )}
+
+          {/* Excluded Non-Estate Inheritable Assets (0% IHT) */}
+          {breakdown.excludedAssetsTotal > 0 && (
+            <div className="pt-2 border-t border-slate-800 space-y-1">
+              <div className="flex items-center justify-between px-2.5 py-1 text-emerald-400 font-semibold">
+                <span className="flex items-center gap-1.5">
+                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                  Excluded Non-Estate Assets (0% IHT):
+                </span>
+                <span className="text-right shrink-0 tabular-nums font-mono font-bold text-emerald-400">
+                  +£{breakdown.excludedAssetsTotal.toLocaleString('en-GB')}
+                </span>
+              </div>
+              {breakdown.excludedLifeInsuranceInTrust > 0 && (
+                <div className="flex items-center justify-between pl-6 pr-2.5 py-0.5 text-[11px] text-slate-300">
+                  <span>• Life Insurance Policy (In Trust):</span>
+                  <span className="text-right shrink-0 tabular-nums font-mono text-emerald-300 font-medium">
+                    £{breakdown.excludedLifeInsuranceInTrust.toLocaleString('en-GB')} (0% IHT)
+                  </span>
+                </div>
+              )}
+              {breakdown.excludedPensionsOutsideEstate > 0 && (
+                <div className="flex items-center justify-between pl-6 pr-2.5 py-0.5 text-[11px] text-slate-300">
+                  <span>• Pension Pot (Discretionary Trust):</span>
+                  <span className="text-right shrink-0 tabular-nums font-mono text-emerald-300 font-medium">
+                    £{breakdown.excludedPensionsOutsideEstate.toLocaleString('en-GB')} (0% IHT)
+                  </span>
+                </div>
+              )}
+              <p className="px-2.5 pt-0.5 text-[10px] text-slate-400 italic">
+                Bypasses probate and passes directly to nominated beneficiaries free of IHT.
+              </p>
+            </div>
+          )}
+
+          {/* Net Inherited by Beneficiaries */}
+          <div className="flex items-center justify-between px-2.5 py-2 font-bold text-blue-300 bg-blue-500/10 border border-blue-500/25 rounded-lg mt-2">
+            <div>
+              <span className="block text-xs text-blue-200">Net Inherited by Beneficiaries:</span>
+              {breakdown.excludedAssetsTotal > 0 && (
+                <span className="block text-[10px] font-normal text-slate-400">
+                  (£{breakdown.netEstateToBeneficiaries.toLocaleString('en-GB')} estate + £{breakdown.excludedAssetsTotal.toLocaleString('en-GB')} tax-free trust/pensions)
+                </span>
+              )}
+            </div>
+            <span className="text-right shrink-0 tabular-nums font-mono font-extrabold text-blue-300 text-sm sm:text-base">
+              £{breakdown.totalInheritedByBeneficiaries.toLocaleString('en-GB')}
+            </span>
+          </div>
         </div>
       </div>
 

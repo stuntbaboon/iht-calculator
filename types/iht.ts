@@ -171,6 +171,13 @@ export interface CalculationBreakdown {
     netCostToHeirs: number; // additionalDonation - taxSaved (can be negative = profit for heirs!)
   } | null;
 
+  // Excluded Non-Estate Inheritable Assets (0% IHT - Outside scope of probate estate)
+  excludedAssetsTotal: number;
+  excludedLifeInsuranceInTrust: number;
+  excludedPensionsOutsideEstate: number;
+  netEstateToBeneficiaries: number;
+  totalInheritedByBeneficiaries: number;
+
   // Planning Recommendations
   planningTips: {
     id: string;

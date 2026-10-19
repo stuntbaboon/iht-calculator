@@ -277,4 +277,31 @@ describe('Master IHT Calculation Engine', () => {
     const resOn = calculateInheritanceTax(stateOn);
     expect(resOn.grossEstate).toBe(700_000); // 400k + 300k
   });
+
+  it('correctly tracks excluded non-estate assets (life insurance in trust) as inheritable assets with 0% IHT', () => {
+    const state: EstateState = {
+      ...defaultEstateState,
+      maritalStatus: 'single',
+      cashAndSavings: 500_000,
+      lifeInsuranceInTrust: 250_000,
+      lifeInsuranceNotInTrust: 0,
+      pensionValue: 150_000,
+      includePensionsInEstate: false,
+      funeralCosts: 0,
+    };
+    const res = calculateInheritanceTax(state);
+    // Gross Estate should only include probate estate: £500,000
+    expect(res.grossEstate).toBe(500_000);
+    // Excluded non-estate assets should include life insurance in trust + exempt pension: £250k + £150k = £400k
+    expect(res.excludedLifeInsuranceInTrust).toBe(250_000);
+    expect(res.excludedPensionsOutsideEstate).toBe(150_000);
+    expect(res.excludedAssetsTotal).toBe(400_000);
+
+    // Taxable: 500k - 325k NRB = 175k * 40% = 70k tax
+    expect(res.totalTaxLiability).toBe(70_000);
+    // Net estate to heirs: 500k - 70k = 430k
+    expect(res.netEstateToBeneficiaries).toBe(430_000);
+    // Total inherited by heirs: 430k net estate + 400k non-estate trust assets = £830,000
+    expect(res.totalInheritedByBeneficiaries).toBe(830_000);
+  });
 });

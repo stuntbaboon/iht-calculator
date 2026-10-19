@@ -230,6 +230,17 @@ export function calculateInheritanceTax(inputState: Partial<EstateState>): Calcu
     });
   }
 
+  // Excluded Non-Estate Assets (passing to beneficiaries outside probate)
+  const excludedLifeInsuranceInTrust = state.lifeInsuranceInTrust || 0;
+  const excludedPensionsOutsideEstate = !state.includePensionsInEstate ? (state.pensionValue || 0) : 0;
+  const excludedAssetsTotal = excludedLifeInsuranceInTrust + excludedPensionsOutsideEstate;
+
+  const netEstateToBeneficiaries = Math.max(
+    0,
+    netEstateBeforeReliefs - totalTaxLiability - charityExemptionAmount
+  );
+  const totalInheritedByBeneficiaries = netEstateToBeneficiaries + excludedAssetsTotal;
+
   return {
     grossEstate,
     mortgagesAndDebts,
@@ -278,5 +289,11 @@ export function calculateInheritanceTax(inputState: Partial<EstateState>): Calcu
 
     charityOptimization: charityEvaluation.charityOptimization,
     planningTips,
+
+    excludedAssetsTotal,
+    excludedLifeInsuranceInTrust,
+    excludedPensionsOutsideEstate,
+    netEstateToBeneficiaries,
+    totalInheritedByBeneficiaries,
   };
 }
