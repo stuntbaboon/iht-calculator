@@ -228,26 +228,30 @@ export function EstateForm({
               <label className="block text-xs font-semibold uppercase tracking-wider text-slate-600">
                 Marital Status
               </label>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                 {[
-                  { value: 'single', label: 'Single / Never Married' },
+                  { value: 'single', label: 'Single / Divorced' },
                   { value: 'married_or_civil_partnership', label: 'Married / Civil Partner' },
                   { value: 'widowed', label: 'Widowed (Surviving)' },
-                  { value: 'divorced', label: 'Divorced' },
-                ].map((item) => (
-                  <button
-                    key={item.value}
-                    type="button"
-                    onClick={() => updateField('maritalStatus', item.value as MaritalStatus)}
-                    className={`p-3 text-left rounded-xl border text-xs font-medium transition-all ${
-                      state.maritalStatus === item.value
-                        ? 'bg-blue-50/60 border-blue-600 text-blue-900 ring-1 ring-blue-600 shadow-xs'
-                        : 'border-slate-200 text-slate-700 hover:bg-slate-50'
-                    }`}
-                  >
-                    {item.label}
-                  </button>
-                ))}
+                ].map((item) => {
+                  const isSelected =
+                    state.maritalStatus === item.value ||
+                    (item.value === 'single' && state.maritalStatus === 'divorced');
+                  return (
+                    <button
+                      key={item.value}
+                      type="button"
+                      onClick={() => updateField('maritalStatus', item.value as MaritalStatus)}
+                      className={`p-3 text-left rounded-xl border text-xs font-medium transition-all ${
+                        isSelected
+                          ? 'bg-blue-50/60 border-blue-600 text-blue-900 ring-1 ring-blue-600 shadow-xs'
+                          : 'border-slate-200 text-slate-700 hover:bg-slate-50'
+                      }`}
+                    >
+                      {item.label}
+                    </button>
+                  );
+                })}
               </div>
             </div>
 
@@ -318,6 +322,8 @@ export function EstateForm({
                   label="Percentage of Remaining Estate Passing to Surviving Spouse"
                   value={state.spouseInheritancePercent || 0}
                   onChange={(v) => updateField('spouseInheritancePercent', v)}
+                  showSlider={true}
+                  presets={[0, 50, 100]}
                   helperText="e.g. 100% if everything passes to the surviving spouse tax-free."
                 />
               </div>
@@ -332,12 +338,14 @@ export function EstateForm({
                 <p className="text-xs text-indigo-800">
                   If your late spouse or civil partner did not use all their allowances, you can claim their unused percentage (up to +£325k NRB and +£175k RNRB).
                 </p>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-4">
                   <PercentageInput
                     id="spouseUnusedNRBPercent"
                     label="Unused Nil-Rate Band from Late Spouse"
                     value={state.spouseUnusedNRBPercent || 0}
                     onChange={(v) => updateField('spouseUnusedNRBPercent', v)}
+                    showSlider={true}
+                    presets={[0, 50, 100]}
                     helperText="100% = +£325,000 extra allowance (max £650k combined)."
                   />
                   <PercentageInput
@@ -345,6 +353,8 @@ export function EstateForm({
                     label="Unused Residence Nil-Rate Band from Late Spouse"
                     value={state.spouseUnusedRNRBPercent || 0}
                     onChange={(v) => updateField('spouseUnusedRNRBPercent', v)}
+                    showSlider={true}
+                    presets={[0, 50, 100]}
                     helperText="100% = +£175,000 extra home allowance (max £350k combined)."
                   />
                 </div>
@@ -375,7 +385,7 @@ export function EstateForm({
                 />
                 <CurrencyInput
                   id="mainResidenceMortgage"
-                  label="Outstanding Mortgage"
+                  label="Remaining Mortgage"
                   value={state.mainResidenceMortgage || 0}
                   onChange={(v) => updateField('mainResidenceMortgage', v)}
                   helperText="Mortgages secured on the home are deducted."
@@ -393,17 +403,30 @@ export function EstateForm({
                       You may qualify for the Downsizing Addition to preserve lost RNRB.
                     </p>
                   </div>
-                  <button
-                    type="button"
-                    onClick={() => updateField('hasDownsized', !state.hasDownsized)}
-                    className={`px-3 py-1 text-xs font-semibold rounded-lg border transition-all ${
-                      state.hasDownsized
-                        ? 'bg-blue-600 text-white border-blue-600'
-                        : 'bg-white text-slate-700 border-slate-300'
-                    }`}
-                  >
-                    {state.hasDownsized ? 'Yes' : 'No'}
-                  </button>
+                  <div className="flex items-center gap-1.5">
+                    <button
+                      type="button"
+                      onClick={() => updateField('hasDownsized', true)}
+                      className={`px-3 py-1 text-xs font-semibold rounded-lg border transition-all ${
+                        state.hasDownsized
+                          ? 'bg-blue-600 text-white border-blue-600 shadow-xs'
+                          : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50'
+                      }`}
+                    >
+                      Yes
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => updateField('hasDownsized', false)}
+                      className={`px-3 py-1 text-xs font-semibold rounded-lg border transition-all ${
+                        !state.hasDownsized
+                          ? 'bg-blue-600 text-white border-blue-600 shadow-xs'
+                          : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50'
+                      }`}
+                    >
+                      No
+                    </button>
+                  </div>
                 </div>
 
                 {state.hasDownsized && (
@@ -439,9 +462,10 @@ export function EstateForm({
                 />
                 <CurrencyInput
                   id="otherPropertiesMortgage"
-                  label="Outstanding Mortgages on Other Properties"
+                  label="Remaining Mortgage"
                   value={state.otherPropertiesMortgage || 0}
                   onChange={(v) => updateField('otherPropertiesMortgage', v)}
+                  helperText="Mortgages secured on the home are deducted."
                 />
               </div>
             </div>
