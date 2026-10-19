@@ -43,21 +43,16 @@ export default function HomePage() {
 
           <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="space-y-1 max-w-2xl">
-              <div className="flex items-center gap-2 flex-wrap">
-                <h2 className="text-base sm:text-lg font-extrabold tracking-tight text-white">
-                  UK Inheritance Tax Assessment & Estate Planning
-                </h2>
-                <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-blue-500/20 text-blue-300 border border-blue-400/30">
-                  Statutory Rules
-                </span>
-              </div>
+              <h2 className="text-base sm:text-lg font-extrabold tracking-tight text-white">
+                UK Inheritance Tax Assessment & Estate Planning
+              </h2>
               <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
                 Enter your estate details below. Allowances, 7-year gift taper schedules, and spousal exemptions update in real-time.
               </p>
             </div>
             <div className="flex items-center gap-2.5 self-start sm:self-auto text-xs text-slate-200 bg-white/10 backdrop-blur-xs px-3.5 py-2 rounded-xl border border-white/15 shadow-2xs shrink-0">
               <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
-              <span className="font-medium">Private: Unauthenticated & Auto-Saved</span>
+              <span className="font-medium">Private: Stored locally & auto-saved</span>
             </div>
           </div>
         </div>

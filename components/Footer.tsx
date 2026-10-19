@@ -2,7 +2,6 @@ import React from 'react';
 import {
   BookOpen,
   ExternalLink,
-  ShieldCheck,
   Landmark,
   Gift,
   Heart,
@@ -231,11 +230,6 @@ export function Footer() {
               HMRC IHT400 Account Return
               <ExternalLink className="w-2.5 h-2.5 text-slate-400" />
             </a>
-          </div>
-
-          <div className="flex items-center gap-1.5 text-slate-400 text-[11px]">
-            <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-            <span>Private: No personal data transmitted or stored remotely without your link share</span>
           </div>
         </div>
 
