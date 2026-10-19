@@ -17,6 +17,7 @@ import {
   ChevronLeft,
   Sparkles,
   ShieldCheck,
+  AlertCircle,
 } from 'lucide-react';
 
 interface EstateFormProps {
@@ -357,6 +358,13 @@ export function EstateForm({
                     presets={[0, 50, 100]}
                     helperText="100% = +£175,000 extra home allowance (max £350k combined)."
                   />
+
+                  <div className="p-3 bg-red-50/80 border border-red-200 rounded-xl text-xs text-red-900 flex items-start gap-2.5">
+                    <AlertCircle className="w-4 h-4 text-red-600 shrink-0 mt-0.5" />
+                    <div>
+                      <span className="font-semibold text-red-950">Important Note on RNRB:</span> The transferred Residence Nil-Rate Band is legally capped by the net equity of the qualifying home passing to direct descendants in the Property tab (s.8D IHTA 1984). It cannot be used against cash, savings, or other investments.
+                    </div>
+                  </div>
                 </div>
               </div>
             )}
@@ -478,8 +486,15 @@ export function EstateForm({
             <div>
               <h3 className="text-base font-bold text-slate-900">Savings, Investments & Personal Possessions</h3>
               <p className="text-xs text-slate-500 mt-0.5">
-                Note that ISAs and Premium Bonds form part of your taxable estate for Inheritance Tax.
+                Bank accounts, investments, personal possessions, life policies, and pensions.
               </p>
+            </div>
+
+            <div className="p-3 bg-red-50/80 border border-red-200 rounded-xl text-xs text-red-900 flex items-start gap-2.5">
+              <AlertCircle className="w-4 h-4 text-red-600 shrink-0 mt-0.5" />
+              <div>
+                <span className="font-semibold text-red-950">Important Note on ISAs & Investments:</span> While ISAs and Premium Bonds are exempt from Income Tax and Capital Gains Tax during your lifetime, they <strong>do not have an Inheritance Tax exemption</strong> and form part of your taxable estate at 40%.
+              </div>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -690,8 +705,11 @@ export function EstateForm({
               </div>
             </div>
 
-            <div className="text-xs text-slate-500 p-3 bg-slate-50 rounded-lg">
-              <span className="font-semibold text-slate-700">Important Note on £2M Taper:</span> Under Section 8D IHTA 1984, BPR and APR reliefs are deducted to calculate taxable estate, but are <em>not</em> deducted when testing if your estate exceeds the £2,000,000 Residence Nil-Rate Band taper threshold.
+            <div className="p-3.5 bg-red-50/80 border border-red-200 rounded-xl text-xs text-red-900 flex items-start gap-2.5">
+              <AlertCircle className="w-4 h-4 text-red-600 shrink-0 mt-0.5" />
+              <div>
+                <span className="font-semibold text-red-950">Important Note on £2M Taper:</span> Under Section 8D IHTA 1984, BPR and APR reliefs are deducted to calculate taxable estate, but are <em>not</em> deducted when testing if your estate exceeds the £2,000,000 Residence Nil-Rate Band taper threshold.
+              </div>
             </div>
           </div>
         )}

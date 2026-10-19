@@ -15,6 +15,7 @@ import {
   Copy,
   X,
   User,
+  AlertCircle,
 } from 'lucide-react';
 
 interface GiftTrackerProps {
@@ -496,6 +497,13 @@ export function GiftTracker({
               Gifts to individuals become <strong>Potentially Exempt Transfers (PETs)</strong>. If you survive for 7 years after the gift, it is 100% tax-free. If death occurs within 7 years, gifts use up your Nil-Rate Band (£325k) first in chronological order. Any excess over the NRB is subject to <strong>Taper Relief</strong> (reducing the tax rate from 40% down to 8% based on the number of years survived).
             </p>
           </div>
+        </div>
+      </div>
+
+      <div className="p-3.5 bg-red-50/80 border border-red-200 rounded-xl text-xs text-red-900 flex items-start gap-2.5">
+        <AlertCircle className="w-4 h-4 text-red-600 shrink-0 mt-0.5" />
+        <div>
+          <span className="font-semibold text-red-950">Important Note on Lifetime Gifts:</span> Gifts made within 7 years of death use up your £325,000 Nil-Rate Band in priority order before your estate can use it. Taper relief only reduces the tax on gifts that <em>exceed</em> the £325,000 allowance.
         </div>
       </div>
 
