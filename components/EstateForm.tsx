@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useState, useRef } from 'react';
 import { EstateState, CalculationBreakdown, MaritalStatus, LifetimeGift } from '@/types/iht';
 import { CurrencyInput } from './CurrencyInput';
 import { PercentageInput } from './PercentageInput';
@@ -30,13 +30,13 @@ interface EstateFormProps {
 }
 
 const TABS = [
-  { id: 'family', label: 'Family & Status', icon: Users },
-  { id: 'property', label: 'Property', icon: Home },
-  { id: 'assets', label: 'Savings & Assets', icon: Coins },
-  { id: 'business', label: 'Business & APR', icon: Briefcase },
-  { id: 'debts', label: 'Debts & Funeral', icon: Receipt },
-  { id: 'gifts', label: '7-Year Gifts', icon: Gift },
-  { id: 'charity', label: 'Charity Giving', icon: HeartHandshake },
+  { id: 'family', label: 'Family & Status', shortLabel: 'Family', icon: Users },
+  { id: 'property', label: 'Property', shortLabel: 'Property', icon: Home },
+  { id: 'assets', label: 'Savings & Assets', shortLabel: 'Savings', icon: Coins },
+  { id: 'business', label: 'Business & APR', shortLabel: 'Business', icon: Briefcase },
+  { id: 'debts', label: 'Debts & Funeral', shortLabel: 'Debts', icon: Receipt },
+  { id: 'gifts', label: '7-Year Gifts', shortLabel: 'Gifts', icon: Gift },
+  { id: 'charity', label: 'Charity Giving', shortLabel: 'Charity', icon: HeartHandshake },
 ];
 
 export function EstateForm({
@@ -48,62 +48,20 @@ export function EstateForm({
   onUpdateGift,
 }: EstateFormProps) {
   const [activeTab, setActiveTab] = useState('family');
-  const tabsContainerRef = useRef<HTMLDivElement>(null);
-  const [canScrollLeft, setCanScrollLeft] = useState(false);
-  const [canScrollRight, setCanScrollRight] = useState(false);
-
-  const checkScroll = useCallback(() => {
-    const el = tabsContainerRef.current;
-    if (el) {
-      setCanScrollLeft(el.scrollLeft > 6);
-      setCanScrollRight(el.scrollLeft < el.scrollWidth - el.clientWidth - 6);
-    }
-  }, []);
-
-  useEffect(() => {
-    const frame = requestAnimationFrame(() => {
-      checkScroll();
-    });
-    const el = tabsContainerRef.current;
-    if (!el) return;
-    el.addEventListener('scroll', checkScroll, { passive: true });
-    window.addEventListener('resize', checkScroll);
-    return () => {
-      cancelAnimationFrame(frame);
-      el.removeEventListener('scroll', checkScroll);
-      window.removeEventListener('resize', checkScroll);
-    };
-  }, [checkScroll]);
-
-  // Smooth scroll active tab into view when activeTab changes
-  useEffect(() => {
-    const container = tabsContainerRef.current;
-    if (!container) return;
-    const activeBtn = container.querySelector(`[data-tab-id="${activeTab}"]`) as HTMLElement | null;
-    if (activeBtn) {
-      activeBtn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
-    }
-  }, [activeTab]);
-
-  const scrollTabs = (direction: 'left' | 'right') => {
-    const el = tabsContainerRef.current;
-    if (el) {
-      el.scrollBy({
-        left: direction === 'left' ? -200 : 200,
-        behavior: 'smooth',
-      });
-    }
-  };
+  const formTopRef = useRef<HTMLDivElement>(null);
 
   const currentIndex = TABS.findIndex((t) => t.id === activeTab);
+
   const handleNext = () => {
     if (currentIndex < TABS.length - 1) {
       setActiveTab(TABS[currentIndex + 1].id);
+      formTopRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   };
   const handlePrev = () => {
     if (currentIndex > 0) {
       setActiveTab(TABS[currentIndex - 1].id);
+      formTopRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   };
 
@@ -136,81 +94,120 @@ export function EstateForm({
   };
 
   return (
-    <div className="bg-white rounded-2xl shadow-xs border border-slate-200">
-      {/* Navigation Tabs with Scroll Affordance */}
-      <div className="relative border-b border-slate-200 bg-slate-50/70 rounded-t-2xl overflow-hidden">
-        {/* Left Scroll Gradient & Button */}
-        {canScrollLeft && (
-          <div className="absolute left-0 top-0 bottom-0 z-10 flex items-center pl-1.5 pointer-events-auto">
-            <div className="absolute inset-0 w-12 bg-gradient-to-r from-slate-100 via-slate-100/90 to-transparent pointer-events-none" />
-            <button
-              type="button"
-              onClick={() => scrollTabs('left')}
-              className="relative z-10 p-1.5 rounded-full bg-white text-slate-700 hover:text-blue-600 shadow-md border border-slate-200 hover:border-blue-300 transition-all hover:scale-105"
-              aria-label="Scroll tabs left"
-              title="Scroll left"
-            >
-              <ChevronLeft className="w-3.5 h-3.5" />
-            </button>
-          </div>
-        )}
+    <div ref={formTopRef} className="bg-white rounded-2xl shadow-xs border border-slate-200 scroll-mt-20">
+      {/* Top Sticky Header: Wizard Controls & Stepper */}
+      <div className="sticky top-16 z-20 bg-slate-50/95 backdrop-blur-md rounded-t-2xl border-b border-slate-200 shadow-2xs">
+        {/* Step Control Header Row */}
+        <div className="px-4 py-3 sm:px-5 sm:py-3.5 flex items-center justify-between gap-3 rounded-t-2xl">
+          {/* Previous Button */}
+          <button
+            type="button"
+            onClick={handlePrev}
+            className={`inline-flex items-center justify-center gap-1.5 px-2.5 py-1.5 sm:px-3.5 sm:py-2 min-w-[36px] sm:min-w-[88px] text-xs font-semibold text-slate-700 bg-white hover:bg-slate-50 hover:text-slate-900 border border-slate-200 hover:border-slate-300 rounded-xl transition-all shadow-2xs shrink-0 ${
+              currentIndex === 0 ? 'invisible pointer-events-none' : ''
+            }`}
+            aria-label="Previous step"
+          >
+            <ChevronLeft className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">Previous</span>
+          </button>
 
-        {/* Scrollable Container */}
-        <div
-          ref={tabsContainerRef}
-          onScroll={checkScroll}
-          className="p-2 overflow-x-auto scrollbar-none scroll-smooth"
-        >
-          <nav className="flex space-x-1 min-w-max" aria-label="Form Tabs">
-            {TABS.map((tab) => {
-              const Icon = tab.icon;
-              const isActive = activeTab === tab.id;
-              return (
-                <button
-                  key={tab.id}
-                  data-tab-id={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
-                  type="button"
-                  className={`flex items-center gap-2 px-3 py-2 text-xs font-semibold rounded-xl whitespace-nowrap transition-all ${
-                    isActive
-                      ? 'bg-blue-50 text-blue-700 shadow-xs border border-blue-300 font-bold'
-                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/80 border border-transparent'
-                  }`}
-                >
-                  <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-blue-600' : 'text-slate-400'}`} />
-                  <span>{tab.label}</span>
-                  {tab.id === 'gifts' && (state.gifts || []).length > 0 && (
-                    <span
-                      className={`ml-1 px-1.5 py-0.2 rounded-full text-[10px] font-bold ${
-                        isActive
-                          ? 'bg-blue-200 text-blue-800'
-                          : 'bg-slate-200 text-slate-700'
-                      }`}
-                    >
-                      {state.gifts.length}
-                    </span>
-                  )}
-                </button>
-              );
-            })}
-          </nav>
+          {/* Center Card Title & Step Indicator */}
+          <div className="flex flex-col items-center text-center min-w-0 px-2">
+            <h2 className="text-xs sm:text-sm font-extrabold uppercase tracking-wider text-slate-900">
+              Estate Details Entry
+            </h2>
+            <span className="text-[11px] font-semibold text-slate-500">
+              step {currentIndex + 1} of {TABS.length}
+            </span>
+          </div>
+
+          {/* Next Button */}
+          <button
+            type="button"
+            onClick={handleNext}
+            className={`inline-flex items-center justify-center gap-1.5 px-2.5 py-1.5 sm:px-3.5 sm:py-2 min-w-[36px] sm:min-w-[88px] text-xs font-semibold text-slate-700 bg-white hover:bg-slate-50 hover:text-slate-900 border border-slate-200 hover:border-slate-300 rounded-xl transition-all shadow-2xs shrink-0 ${
+              currentIndex === TABS.length - 1 ? 'invisible pointer-events-none' : ''
+            }`}
+            aria-label="Next step"
+          >
+            <span className="hidden sm:inline">Next</span>
+            <ChevronRight className="w-3.5 h-3.5" />
+          </button>
         </div>
 
-        {/* Right Scroll Gradient & Button */}
-        {canScrollRight && (
-          <div className="absolute right-0 top-0 bottom-0 z-10 flex items-center pr-1.5 pointer-events-auto">
-            <div className="absolute inset-0 w-12 bg-gradient-to-l from-slate-100 via-slate-100/90 to-transparent pointer-events-none -left-6" />
-            <button
-              type="button"
-              onClick={() => scrollTabs('right')}
-              className="relative z-10 p-1.5 rounded-full bg-white text-slate-700 hover:text-blue-600 shadow-md border border-slate-200 hover:border-blue-300 transition-all hover:scale-105"
-              aria-label="Scroll tabs right"
-              title="Scroll right"
-            >
-              <ChevronRight className="w-3.5 h-3.5" />
-            </button>
+        {/* Connected Stepper on Progress Track */}
+        <div className="px-4 pb-3.5 sm:px-8 sm:pb-4 pt-1">
+          <div className="relative">
+            {/* Background & Progress Connecting Track */}
+            <div className="absolute top-3.5 left-3.5 right-3.5 h-0.5 -translate-y-1/2 -z-0 pointer-events-none">
+              <div className="w-full h-full bg-slate-200 relative">
+                <div
+                  className="h-full bg-blue-600 transition-all duration-300 ease-out"
+                  style={{ width: `${(currentIndex / (TABS.length - 1)) * 100}%` }}
+                />
+              </div>
+            </div>
+
+            {/* Stepper Node Buttons */}
+            <div className="relative z-10 flex items-start justify-between" role="tablist" aria-label="Form Steps">
+              {TABS.map((tab, index) => {
+                const isActive = activeTab === tab.id;
+                const isPassed = index <= currentIndex;
+                return (
+                  <button
+                    key={tab.id}
+                    type="button"
+                    role="tab"
+                    aria-selected={isActive}
+                    onClick={() => {
+                      setActiveTab(tab.id);
+                      formTopRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }}
+                    className="group flex flex-col items-center focus:outline-hidden"
+                    title={`Step ${index + 1}: ${tab.label}`}
+                  >
+                    <div className="relative">
+                      <span
+                        className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold transition-all ${
+                          isActive
+                            ? 'bg-blue-600 text-white ring-4 ring-blue-100 shadow-xs scale-110'
+                            : isPassed
+                              ? 'bg-white border-2 border-blue-600 text-blue-600 hover:bg-blue-50'
+                              : 'bg-white border-2 border-slate-300 text-slate-500 hover:border-slate-400 hover:text-slate-700'
+                        }`}
+                      >
+                        {index + 1}
+                      </span>
+                      {tab.id === 'gifts' && (state.gifts || []).length > 0 && (
+                        <span
+                          className={`absolute -top-1 -right-1.5 w-4 h-4 rounded-full text-[9px] font-bold flex items-center justify-center shadow-2xs ${
+                            isActive
+                              ? 'bg-white text-blue-700 border border-blue-200'
+                              : 'bg-blue-600 text-white'
+                          }`}
+                        >
+                          {state.gifts.length}
+                        </span>
+                      )}
+                    </div>
+                    <span
+                      className={`hidden sm:block text-[11px] font-medium mt-1.5 transition-colors ${
+                        isActive
+                          ? 'text-blue-700 font-bold'
+                          : isPassed
+                            ? 'text-slate-700 font-medium'
+                            : 'text-slate-400 group-hover:text-slate-600'
+                      }`}
+                    >
+                      {tab.shortLabel}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
           </div>
-        )}
+        </div>
       </div>
 
       {/* Tab Contents */}
@@ -868,33 +865,6 @@ export function EstateForm({
             </div>
           </div>
         )}
-      </div>
-
-      {/* Footer Navigation */}
-      <div className="border-t border-slate-200 bg-slate-50/70 p-4 flex items-center justify-between rounded-b-2xl">
-        <button
-          type="button"
-          onClick={handlePrev}
-          disabled={currentIndex === 0}
-          className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold text-slate-700 bg-white hover:bg-slate-50 border border-slate-300 rounded-xl disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-        >
-          <ChevronLeft className="w-3.5 h-3.5" />
-          Previous Section
-        </button>
-
-        <span className="text-xs text-slate-400 font-medium">
-          Step {currentIndex + 1} of {TABS.length}
-        </span>
-
-        <button
-          type="button"
-          onClick={handleNext}
-          disabled={currentIndex === TABS.length - 1}
-          className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-xl disabled:opacity-40 disabled:cursor-not-allowed transition-colors shadow-xs"
-        >
-          Next Section
-          <ChevronRight className="w-3.5 h-3.5" />
-        </button>
       </div>
     </div>
   );
