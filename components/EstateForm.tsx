@@ -266,6 +266,8 @@ export function EstateForm({
                     label="Percentage of Home Passing to Direct Descendants"
                     value={state.directDescendantSharePercent ?? 100}
                     onChange={(v) => updateField('directDescendantSharePercent', v)}
+                    showSlider={true}
+                    presets={[0, 50, 100]}
                     helperText="If 100% of the property is left to children/descendants, leave at 100%."
                   />
                 </div>
@@ -678,6 +680,7 @@ export function EstateForm({
                   label="Percentage of Net Estate Left to Charity"
                   value={state.charityDonationValue || 0}
                   onChange={(v) => updateField('charityDonationValue', v)}
+                  showSlider={true}
                   presets={[0, 5, 10, 20]}
                   helperText="Tip: Choose 10% to test the statutory reduced rate threshold."
                 />
