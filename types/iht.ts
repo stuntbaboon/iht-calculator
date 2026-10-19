@@ -67,6 +67,7 @@ export interface EstateState {
   // Life Insurance & Pensions
   lifeInsuranceNotInTrust: number; // Subject to IHT
   lifeInsuranceInTrust: number;    // Exempt
+  lifeInsuranceIsWrittenInTrust?: boolean; // Whether life policy is held in trust (default true)
   pensionValue: number;            // Unused defined contribution pension
   includePensionsInEstate: boolean;// Toggle for post-April 2027 Autumn Budget rules
 

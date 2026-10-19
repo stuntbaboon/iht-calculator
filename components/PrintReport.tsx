@@ -112,16 +112,40 @@ export function PrintReport({ state, breakdown }: PrintReportProps) {
               <td className="py-1 text-slate-600">Personal Possessions & Vehicles (Chattels):</td>
               <td className="py-1 text-right font-medium">£{(state.personalChattels || 0).toLocaleString('en-GB')}</td>
             </tr>
+            {state.lifeInsuranceNotInTrust > 0 && (
+              <tr>
+                <td className="py-1 text-slate-600">Life Insurance (Taxable - Payable to Estate):</td>
+                <td className="py-1 text-right font-medium">£{state.lifeInsuranceNotInTrust.toLocaleString('en-GB')}</td>
+              </tr>
+            )}
+            {state.includePensionsInEstate && state.pensionValue > 0 && (
+              <tr>
+                <td className="py-1 text-slate-600">Defined Contribution Pensions (April 2027 rules):</td>
+                <td className="py-1 text-right font-medium">£{state.pensionValue.toLocaleString('en-GB')}</td>
+              </tr>
+            )}
             {state.bpr100Assets > 0 && (
               <tr>
                 <td className="py-1 text-slate-600">Business Property (100% BPR Qualifying):</td>
                 <td className="py-1 text-right font-medium">£{state.bpr100Assets.toLocaleString('en-GB')}</td>
               </tr>
             )}
+            {state.bpr50Assets > 0 && (
+              <tr>
+                <td className="py-1 text-slate-600">Business Property (50% BPR Qualifying):</td>
+                <td className="py-1 text-right font-medium">£{state.bpr50Assets.toLocaleString('en-GB')}</td>
+              </tr>
+            )}
             {state.apr100Assets > 0 && (
               <tr>
                 <td className="py-1 text-slate-600">Agricultural Property (100% APR Qualifying):</td>
                 <td className="py-1 text-right font-medium">£{state.apr100Assets.toLocaleString('en-GB')}</td>
+              </tr>
+            )}
+            {state.apr50Assets > 0 && (
+              <tr>
+                <td className="py-1 text-slate-600">Agricultural Property (50% APR Qualifying):</td>
+                <td className="py-1 text-right font-medium">£{state.apr50Assets.toLocaleString('en-GB')}</td>
               </tr>
             )}
             {state.otherDebts > 0 && (
@@ -140,6 +164,23 @@ export function PrintReport({ state, breakdown }: PrintReportProps) {
             </tr>
           </tbody>
         </table>
+        {(state.lifeInsuranceInTrust > 0 || (!state.includePensionsInEstate && state.pensionValue > 0)) && (
+          <div className="p-2.5 bg-emerald-50/60 border border-emerald-200 rounded-lg text-xs space-y-1 mt-2">
+            <div className="font-semibold text-emerald-900">Excluded Non-Estate Assets (0% IHT):</div>
+            {state.lifeInsuranceInTrust > 0 && (
+              <div className="flex justify-between text-emerald-800">
+                <span>• Life Insurance Policy (Written in Trust):</span>
+                <span className="font-medium">£{state.lifeInsuranceInTrust.toLocaleString('en-GB')} (Exempt)</span>
+              </div>
+            )}
+            {!state.includePensionsInEstate && state.pensionValue > 0 && (
+              <div className="flex justify-between text-emerald-800">
+                <span>• Unused Defined Contribution Pensions (Pre-April 2027 rules):</span>
+                <span className="font-medium">£{state.pensionValue.toLocaleString('en-GB')} (Excluded)</span>
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Allowances Table */}

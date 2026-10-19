@@ -37,6 +37,7 @@ export const defaultEstateState: EstateState = {
 
   lifeInsuranceNotInTrust: 0,
   lifeInsuranceInTrust: 0,
+  lifeInsuranceIsWrittenInTrust: true,
   pensionValue: 0,
   includePensionsInEstate: false,
 

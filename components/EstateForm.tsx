@@ -16,6 +16,7 @@ import {
   ChevronRight,
   ChevronLeft,
   Sparkles,
+  ShieldCheck,
 } from 'lucide-react';
 
 interface EstateFormProps {
@@ -102,6 +103,34 @@ export function EstateForm({
   const handlePrev = () => {
     if (currentIndex > 0) {
       setActiveTab(TABS[currentIndex - 1].id);
+    }
+  };
+
+  // Derive life insurance values
+  const lifeInsuranceAmount =
+    (state.lifeInsuranceInTrust || 0) + (state.lifeInsuranceNotInTrust || 0);
+  const isLifeInsuranceInTrust =
+    state.lifeInsuranceInTrust > 0 ||
+    (state.lifeInsuranceNotInTrust === 0 && (state.lifeInsuranceIsWrittenInTrust ?? true));
+
+  const handleLifeInsuranceAmountChange = (amount: number) => {
+    if (isLifeInsuranceInTrust) {
+      updateField('lifeInsuranceInTrust', amount);
+      updateField('lifeInsuranceNotInTrust', 0);
+    } else {
+      updateField('lifeInsuranceNotInTrust', amount);
+      updateField('lifeInsuranceInTrust', 0);
+    }
+  };
+
+  const handleLifeInsuranceTrustToggle = (inTrust: boolean) => {
+    updateField('lifeInsuranceIsWrittenInTrust', inTrust);
+    if (inTrust) {
+      updateField('lifeInsuranceInTrust', lifeInsuranceAmount);
+      updateField('lifeInsuranceNotInTrust', 0);
+    } else {
+      updateField('lifeInsuranceNotInTrust', lifeInsuranceAmount);
+      updateField('lifeInsuranceInTrust', 0);
     }
   };
 
@@ -429,7 +458,7 @@ export function EstateForm({
               </p>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               <CurrencyInput
                 id="cashAndSavings"
                 label="Cash, Bank Accounts & ISAs"
@@ -446,18 +475,94 @@ export function EstateForm({
               />
               <CurrencyInput
                 id="personalChattels"
-                label="Personal Possessions & Vehicles (Chattels)"
+                label="Personal Possessions"
                 value={state.personalChattels || 0}
                 onChange={(v) => updateField('personalChattels', v)}
                 helperText="Cars, jewellery, antiques, artwork, collections, furniture."
               />
-              <CurrencyInput
-                id="lifeInsuranceNotInTrust"
-                label="Life Insurance (NOT in Trust)"
-                value={state.lifeInsuranceNotInTrust || 0}
-                onChange={(v) => updateField('lifeInsuranceNotInTrust', v)}
-                helperText="Policies payable to your estate are subject to 40% IHT."
-              />
+            </div>
+
+            {/* Dedicated Life Insurance Section */}
+            <div className="p-4 bg-slate-50/80 border border-slate-200 rounded-xl space-y-3">
+              {/* Row 1: Title */}
+              <h4 className="text-sm font-semibold text-slate-900 flex items-center gap-2">
+                <ShieldCheck className="w-4 h-4 text-emerald-600" />
+                Life Insurance Policy
+              </h4>
+
+              {/* Row 2: Full-width Subtitle */}
+              <p className="text-xs text-slate-500">
+                Life insurance written into trust pays directly to named beneficiaries and does not form part of your estate for Inheritance Tax.
+              </p>
+
+              {/* Two columns underneath */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1 items-start">
+                {/* Left Column: Input field & Helper text followed by Held in trust? toggle */}
+                <div className="space-y-3">
+                  <CurrencyInput
+                    id="lifeInsuranceAmount"
+                    label="Life Insurance Policy Value"
+                    value={lifeInsuranceAmount}
+                    onChange={handleLifeInsuranceAmountChange}
+                    helperText="Total sum assured across your life insurance policies."
+                  />
+
+                  <div className="flex items-center justify-between gap-3 pt-1">
+                    <span className="text-xs font-semibold text-slate-700">Held in trust?</span>
+                    <div className="flex items-center gap-1.5">
+                      <button
+                        type="button"
+                        onClick={() => handleLifeInsuranceTrustToggle(true)}
+                        className={`px-3 py-1 text-xs font-semibold rounded-lg border transition-all ${
+                          isLifeInsuranceInTrust
+                            ? 'bg-blue-600 text-white border-blue-600 shadow-xs'
+                            : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50'
+                        }`}
+                      >
+                        Yes
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleLifeInsuranceTrustToggle(false)}
+                        className={`px-3 py-1 text-xs font-semibold rounded-lg border transition-all ${
+                          !isLifeInsuranceInTrust
+                            ? 'bg-blue-600 text-white border-blue-600 shadow-xs'
+                            : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50'
+                        }`}
+                      >
+                        No
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Right Column: Alternate Message Box */}
+                <div className="sm:pt-6">
+                  {isLifeInsuranceInTrust ? (
+                    <div className="p-3.5 bg-emerald-50/70 border border-emerald-200 rounded-xl text-xs text-emerald-900 space-y-1.5">
+                      <div className="flex items-center gap-1.5 font-semibold text-emerald-800">
+                        <span className="w-2 h-2 rounded-full bg-emerald-500" />
+                        100% Tax-Free (Written in Trust)
+                      </div>
+                      <p className="text-emerald-700 leading-relaxed">
+                        Proceeds bypass probate and are excluded from your estate under s.5(2) IHTA 1984.
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="p-3.5 bg-amber-50/70 border border-amber-200 rounded-xl text-xs text-amber-900 space-y-1.5">
+                      <div className="flex items-center gap-1.5 font-semibold text-amber-800">
+                        <span className="w-2 h-2 rounded-full bg-amber-500" />
+                        Taxable at 40% (Paid to Estate)
+                      </div>
+                      <p className="text-amber-700 leading-relaxed">
+                        {lifeInsuranceAmount > 0
+                          ? `This payout adds to your taxable estate and may attract £${Math.round(lifeInsuranceAmount * 0.4).toLocaleString('en-GB')} in IHT. Writing it into trust is usually free.`
+                          : 'Policies payable to your estate form part of your taxable estate and may be taxed at 40%.'}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
 
             {/* Pensions Section with April 2027 Toggle */}
@@ -494,7 +599,7 @@ export function EstateForm({
                 </button>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+              <div className="pt-2 max-w-md">
                 <CurrencyInput
                   id="pensionValue"
                   label="Unused Pension Pot Value"
@@ -505,13 +610,6 @@ export function EstateForm({
                       ? 'Included in Gross Estate under post-April 2027 rules.'
                       : 'Excluded from Gross Estate under current legislation.'
                   }
-                />
-                <CurrencyInput
-                  id="lifeInsuranceInTrust"
-                  label="Life Insurance (Written in Trust)"
-                  value={state.lifeInsuranceInTrust || 0}
-                  onChange={(v) => updateField('lifeInsuranceInTrust', v)}
-                  helperText="Excluded from estate (completely exempt from IHT)."
                 />
               </div>
             </div>
